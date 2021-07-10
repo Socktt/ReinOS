@@ -2,7 +2,7 @@
 
 KERNEL_LOC equ 0x1000       ; didnt fix :(
 
-mov dl, [BOOT_DISK]         ; store boot disk from bios
+mov [BOOT_DISK], dl         ; store boot disk from bios
 
 mov bx, ok                  ; print it
 call printStr               ; everything is fine?
