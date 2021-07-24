@@ -4,8 +4,6 @@
 
 #define VIDEO_MEM (char *)0xb8000
 
-void fib();
-
 extern "C" void main(){
     topRow();
     bottomRow();
