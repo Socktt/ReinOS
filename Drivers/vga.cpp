@@ -25,6 +25,28 @@ void setCursorPos(int x, int y) {
     setCursorPosRaw(pos);
 }
 
+void disableCursor() {     // https://wiki.osdev.org/Text_Mode_Cursor
+    outb(0x3D4, 0x0A);
+    outb(0x3D5, 0x20);
+}
+
+void enableCursor(uint8_t cursor_start, uint8_t cursor_end) {      // https://wiki.osdev.org/Text_Mode_Cursor
+    outb(0x3D4, 0x0A);
+    outb(0x3D5, (inb(0x3D5) & 0xC0) | cursor_start);
+
+    outb(0x3D4, 0x0B);
+    outb(0x3D5, (inb(0x3D5) & 0xE0) | cursor_end);
+}
+
+uint16_t getCursorPosition(void) {      // https://wiki.osdev.org/Text_Mode_Cursor
+    uint16_t pos = 0;
+    outb(0x3D4, 0x0F);
+    pos |= inb(0x3D5);
+    outb(0x3D4, 0x0E);
+    pos |= ((uint16_t)inb(0x3D5)) << 8;
+    return pos;
+}
+
 void clearScreen(){
     for(int i = 0; i<VGA_HEIGHT;i++){
         for(int j = 0;j<VGA_WIDTH;j++){
@@ -36,11 +58,11 @@ void clearScreen(){
     return;
 }
 
-void blueScreen(){
+void colourScreen(uint8_t colour){
     for(int i = 0; i<VGA_HEIGHT;i++){
         for(int j = 0;j<VGA_WIDTH;j++){
             *(VIDEO_MEM + (i * VGA_HEIGHT * 2) + j * 2) = (const char)' ';
-            *(VIDEO_MEM + (i * VGA_HEIGHT * 2) + j * 2 - 1) = (const char)0x1f;
+            *(VIDEO_MEM + (i * VGA_HEIGHT * 2) + j * 2 - 1) = (const char)colour;
         }
     }
     setCursorPos(0, 0);
@@ -84,5 +106,14 @@ void print(const char* text) {
         textptr++;
     }
     setCursorPosRaw(i);
+    return;
+}
+
+void resetScreen(){
+    clearScreen();
+    topRow();
+    print("ReinOS Alpha");
+    bottomRow();
+    setCursorPos(0, 1);
     return;
 }
