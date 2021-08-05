@@ -1,6 +1,8 @@
 #include "../stuff/typeDef.h"
 #include "./port_io.h"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wint-to-pointer-cast"
 #define VIDEO_MEM (char *)0xb8000
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 50
@@ -117,3 +119,34 @@ void resetScreen(){
     setCursorPos(0, 1);
     return;
 }
+
+void drawPixel(uint8_t x, uint8_t y, uint8_t colour){
+    uint8_t * pos = (y * 320 + x) + (uint8_t *)0xA0000;
+    *pos = colour;
+    return;
+}
+
+void graphicsClearScreen(uint8_t colour){
+    uint8_t * graphicsVideoMem = (uint8_t *)0xA0000;
+    for(int i = 0;i < 200;i++){
+        for(int j = 0;j < 320;j++){
+            *graphicsVideoMem = colour;
+            graphicsVideoMem++;
+        }
+    }
+}
+
+void drawPalette(uint8_t x, uint8_t y){
+    uint8_t * graphicsVideoMem = (uint8_t *)0xA0000 + (y * 320 + x);
+    uint8_t colourIndex = 0x0;
+    for(uint8_t i = 0;i < 0xf;i++){
+        for(uint8_t j = 0;j < 0xf;j++) {
+            *graphicsVideoMem = colourIndex;
+            colourIndex++;
+            graphicsVideoMem++;
+        }
+        graphicsVideoMem += (320 - 0xf);
+    }
+
+}
+#pragma clang diagnostic pop

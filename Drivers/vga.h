@@ -15,4 +15,7 @@ void colourScreen(uint8_t colour);
 void topRow();
 void bottomRow();
 void resetScreen();
+void drawPixel(uint8_t x, uint8_t y, uint8_t colour);
+void graphicsClearScreen(uint8_t colour);
+void drawPalette(uint8_t x, uint8_t y);
 #endif
